@@ -31,11 +31,11 @@
 
 ## 2. Speisekarte (`menu.js`)
 
-- **Preise = alte eigene Website** (kochys-ratingen.de). Lieferando ist ca. 0,40–1,40 € teurer.
-- **Von Lieferando ergänzt** (dort Lieferando-Preise, bitte prüfen): Hähnchen-Gemüse-Pfanne 13,90 €, Käsekuchen 5,00 €, Himbeer-Quarkschnitte 5,00 €, Capri-Sun 1,50 €, Red Bull 3,50 €. Ebenfalls von Lieferando: Getränkesorten, Tortiglioni, Rindfleisch-Patty, Geflügel-Bratwurst/-Currywurst, Döner-Salat (Eisberg, Kraut, Zwiebeln, Tomaten, Gurken).
-- **Vom Neueröffnungs-Flyer**: Dressings (Joghurt, French, Honig-Senf, Balsamico, Essig & Öl), „selbstgemachter Dürüm“.
-- Tippfehler der alten Seite korrigiert (Hähnchen, Parmesan, Fleischbox, Elephant Bay, Halal-Bacon, Arrabbiata …).
-- Keine Gerichtnummern sichtbar (`SHOP.numbers = false`), weil die Karte im Laden keine hat. Intern sind die Gerichte 1–62 fortlaufend nummeriert.
+- **Preise und Nummern = aktuelle Karte im Laden** (Foto vom 27.10.2026). Nummern 1–42 wie auf der Karte; Menüs, Tageskarte und Getränke haben dort keine Nummer (intern 101+, werden ohne Nummer angezeigt).
+- Gegenüber der alten Website geändert: Kebabtasche Hähnchen 7,90 € (statt 7,60 €), neu „Extra Wurst + 3,00 €“ bei Brat- und Currywurst.
+- Entfernt, weil nicht auf der Karte im Laden: Hähnchen-Gemüse-Pfanne, Desserts, Capri-Sun und Red Bull einzeln (nur bei Lieferando).
+- Auf dem Foto nicht lesbar (Spiegelung/abgeschnitten), daher von der alten Website übernommen: Burger 18–20 (8,90 €), Preise rechts bei Snacks 24 und 26–30.
+- Von Lieferando: Getränkesorten, Tortiglioni, Rindfleisch-Patty, Geflügelwurst, Döner-Salat. Vom Flyer: Dressings, „selbstgemachter Dürüm“.
 - **Allergene fehlen bewusst.** Der alte Flyer hat Kennzeichnungen, aber mit Fehlern (z. B. Garnelen ohne Krebstiere). Erst eintragen, wenn der Inhaber eine geprüfte Liste gibt (Feld 3 je Gericht, z. B. `"a,c,1"`).
 
 Format und Auswahl-Gruppen sind oben in `menu.js` erklärt: `sizes` = Varianten mit eigenem Preis (Hähnchen/Kalb, Stückzahl), `groups` = Pflicht-Auswahl (`one`) oder Extras mit Aufpreis (`many`).
@@ -64,7 +64,7 @@ Format und Auswahl-Gruppen sind oben in `menu.js` erklärt: `sizes` = Varianten 
 
 ## 5. Offene Punkte (vom Inhaber bestätigen lassen)
 
-1. Aktuelle Preise (Karte im Laden fotografieren) und ob die ergänzten Lieferando-Gerichte stimmen
+1. Fehlende Preise: Burger 18–20 und rechte Spalte Snacks (Foto ohne Spiegelung)
 2. Allergene und Zusatzstoffe je Gericht (geprüfte Liste)
 3. Liefergebühr, Zahlungsarten (Karte?), Mindestbestellwert mit oder ohne Getränke
 4. Bestellungen per WhatsApp oder E-Mail empfangen? Welche Nummer/Adresse?

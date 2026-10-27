@@ -576,7 +576,7 @@ const SHOP = {
   orderWhatsapp: "",   // z. B. "4917612345678" → Bestellung wird als fertige WhatsApp-Nachricht geschickt
   orderEmail: "",      // z. B. "info@kochys-ratingen.de" → Bestellung als E-Mail (nur wenn orderWhatsapp leer ist)
                        // beide leer → Kunde sieht seine Bestellübersicht und ruft an
-  numbers: false,      // true = Gerichtnummern aus menu.js anzeigen
+  numbers: true,       // true = Gerichtnummern wie auf der Karte im Laden anzeigen (Nummern ab 100 = ohne Nummer)
   delivery: true, pickup: true,
   deliveryFee: 0,      // Liefergebühr in €, 0 = keine
   minOhneGetraenke: false,   // true = Mindestbestellwert wird ohne Getränke gerechnet
@@ -625,6 +625,7 @@ MENU.forEach(c => c.items.forEach(([nr, name, codes, desc, price, tags, o]) => {
     sizes, sizeKey, groups, drink: !!c.drinks, hint: c.hint || '' };
 }));
 const multi = it => !!it.sizes;
+const showNr = it => SHOP.numbers && it.nr < 100;
 const needsSheet = it => it.groups.some(g => g.one);   // Pflicht-Auswahl → Fenster öffnen
 const basePrice = (it, s) => multi(it) ? it.price[s] : it.price;
 const firstSize = it => it.price.findIndex(p => p != null);
@@ -647,7 +648,7 @@ const store = {
   get(k, d){ try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch(e){ return d; } },
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 };
-const KEY_CART = 'kochys-cart1', KEY_KUNDE = 'kochys-kunde1';
+const KEY_CART = 'kochys-cart2', KEY_KUNDE = 'kochys-kunde1';
 let cart = store.get(KEY_CART, []);
 if (!Array.isArray(cart)) cart = [];
 cart = cart.filter(l => l && ITEMS[l.nr] && l.qty > 0 && (!multi(ITEMS[l.nr]) || ITEMS[l.nr].price[l.s] != null));
@@ -665,7 +666,7 @@ function itemHTML([nr]){
   const sizes = multi(it) ? `<div class="sizes" style="--n:${n}" data-nr="${nr}"></div>` : '';
   const compact = !multi(it) && !it.desc && !t;
   return `<article class="item${multi(it) ? ' multi' : ''}${compact ? ' compact' : ''}" data-nr="${nr}" data-s="${esc((nr + ' ' + it.name + ' ' + plain(it.desc) + ' ' + it.catName).toLowerCase())}">
-    ${SHOP.numbers ? `<span class="nr">${nr}</span>` : ''}
+    ${showNr(it) ? `<span class="nr">${nr}</span>` : ''}
     <div class="body"><div class="name">${esc(it.name)}${it.codes ? `<sup>${it.codes}</sup>` : ''}</div>${it.desc ? `<div class="desc">${fmt(it.desc)}</div>` : ''}${t ? `<div class="tags">${t}</div>` : ''}${sizes}</div>
     ${multi(it) ? '' : `<div class="side"><span class="price">${eur(it.price)}</span><span class="ctl" data-nr="${nr}"></span></div>`}</article>`;
 }
@@ -848,7 +849,7 @@ const SH = { nr: null, qty: 1, s: -1, ex: [], ch: {} };
 function openSheet(nr, s){
   const it = ITEMS[nr];
   Object.assign(SH, { nr, qty: 1, s: multi(it) ? (s ?? firstSize(it)) : -1, ex: [], ch: defaultChoices(it) });
-  document.getElementById('shnr').textContent = SHOP.numbers ? 'Nr. ' + nr : `${it.icon} ${it.catName}`;
+  document.getElementById('shnr').textContent = showNr(it) ? `${it.icon} ${it.catName} · Nr. ${nr}` : `${it.icon} ${it.catName}`;
   document.getElementById('shname').innerHTML = `${esc(it.name)}${it.codes ? `<sup>${it.codes}</sup>` : ''}`;
   const d = document.getElementById('shdesc'); d.innerHTML = fmt(it.desc); d.style.display = it.desc ? '' : 'none';
   const n = document.getElementById('shnote'); n.value = ''; n.placeholder = it.hint || 'z. B. ohne Zwiebeln';
@@ -917,7 +918,7 @@ function viewCart(){
   }
   dbody.innerHTML = modeToggle() + cart.map((l, i) => { const it = ITEMS[l.nr], info = lineInfo(l); return `
     <div class="line">
-      <div class="ln"><div class="lt">${esc(it.name)} ${SHOP.numbers ? `<small>Nr. ${it.nr}</small>` : ''}</div>
+      <div class="ln"><div class="lt">${esc(it.name)} ${showNr(it) ? `<small>Nr. ${it.nr}</small>` : ''}</div>
         ${info ? `<div class="linfo">${esc(info)}</div>` : ''}
         ${l.note ? `<div class="lnote">„${esc(l.note)}“</div>` : ''}
         <div class="lp">${eur(l.qty * unitPrice(l))}</div></div>
@@ -993,7 +994,7 @@ function orderText(b){
   L.push(`Neue Bestellung – ${SHOP.name}`, `Bestell-Nr.: ${b.no}`, '');
   L.push(`Art: ${o.mode === 'liefer' ? 'Lieferung' : 'Abholung'}`);
   L.push(`Zeit: ${o.when === 'time' && o.time ? o.time + ' Uhr' : 'So schnell wie möglich'}`, '');
-  b.lines.forEach(l => { L.push(`${l.qty}× ${l.name}${SHOP.numbers ? ` (Nr. ${l.nr})` : ''} – ${eur(l.qty * l.unit)}`); if (l.info) L.push(`   ${l.info}`); if (l.note) L.push(`   Hinweis: ${l.note}`); });
+  b.lines.forEach(l => { L.push(`${l.qty}× ${l.name}${showNr(ITEMS[l.nr]) ? ` (Nr. ${l.nr})` : ''} – ${eur(l.qty * l.unit)}`); if (l.info) L.push(`   ${l.info}`); if (l.note) L.push(`   Hinweis: ${l.note}`); });
   L.push('', `Zwischensumme: ${eur(b.sub)}`);
   if (b.fee) L.push(`Liefergebühr: ${eur(b.fee)}`);
   L.push(`Gesamt: ${eur(b.total)}`, `Zahlung: ${o.pay}`, '', `Name: ${o.name}`, `Telefon: ${o.phone}`);
