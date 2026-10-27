@@ -1,6 +1,6 @@
 /* Service Worker: immer zuerst die aktuelle Version aus dem Netz, offline die zuletzt geladene.
    Bei Änderungen die Versionsnummer hochzählen. */
-const CACHE = 'kochys-v3';
+const CACHE = 'kochys-v4';
 self.addEventListener('install', e => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(
   caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())

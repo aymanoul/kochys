@@ -576,6 +576,7 @@ const SHOP = {
   orderWhatsapp: "",   // z. B. "4917612345678" → Bestellung wird als fertige WhatsApp-Nachricht geschickt
   orderEmail: "",      // z. B. "info@kochys-ratingen.de" → Bestellung als E-Mail (nur wenn orderWhatsapp leer ist)
                        // beide leer → Kunde sieht seine Bestellübersicht und ruft an
+  demoDashboard: true, // nur Vorschau: abgeschickte Bestellungen erscheinen im Demo-Dashboard (nur in diesem Browser)
   numbers: true,       // true = Gerichtnummern wie auf der Karte im Laden anzeigen (Nummern ab 100 = ohne Nummer)
   delivery: true, pickup: true,
   deliveryFee: 0,      // Liefergebühr in €, 0 = keine
@@ -985,6 +986,7 @@ function placeOrder(){
     lines: cart.map(l => ({ ...l, name: ITEMS[l.nr].name, info: lineInfo(l), unit: unitPrice(l) })),
     sub: subtotal(), fee: fee(), total: total(), o: { ...order, areaName: area() ? area().name : '' }
   };
+  if (SHOP.demoDashboard) { const dem = store.get('kochys-demo-orders', []); dem.push({ ...last, t: Date.now() }); store.set('kochys-demo-orders', dem.slice(-20)); }
   cart = []; store.set(KEY_CART, cart); order.note = '';
   renderCtls(); updateBars();
   view = 'done'; renderDrawer();
@@ -1029,7 +1031,8 @@ function viewDone(){
       <hr><div>${o.mode === 'liefer' ? `Lieferung an ${esc(o.street)}, ${esc(o.zip)} ${esc(o.city)}` : 'Abholung: ' + esc(SHOP.address)}</div>
       <div>${o.when === 'time' && o.time ? esc(o.time) + ' Uhr' : 'So schnell wie möglich'} · ${esc(o.pay)}</div>
     </div>
-    <div class="acts">${acts}<button class="btn btn-line" data-act="copy">Bestellung kopieren</button></div>`;
+    <div class="acts">${acts}<button class="btn btn-line" data-act="copy">Bestellung kopieren</button></div>
+    ${SHOP.demoDashboard ? `<p class="hint" style="text-align:center">Demo: <a href="dashboard-demo/#neu" target="_blank" rel="noopener" style="font-weight:600;color:var(--brown)">So kommt diese Bestellung im Laden an →</a></p>` : ''}`;
   dfoot.innerHTML = `<button class="btn btn-line" data-act="new" style="justify-content:center">Neue Bestellung</button>`;
   dbody.scrollTop = 0;
 }

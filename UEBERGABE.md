@@ -84,3 +84,12 @@ Format und Auswahl-Gruppen sind oben in `menu.js` erklärt: `sizes` = Varianten 
 3. Domain kochys-ratingen.de von Strato zu Cloudflare (DNS), **MX/TXT für E-Mail übernehmen**, Cloudflare Pages mit dem Repo verbinden, erst danach WordPress bei Strato abschalten
 4. Google-Unternehmensprofil: Website-Link prüfen
 5. Später: Stripe/PayPal + Bondrucker (Plan wie bei O la la)
+
+---
+
+## 7. Dashboard-Demo (27.10.2026)
+
+- Live: https://aymanoul.github.io/kochys/dashboard-demo/ – nur Beispieldaten, im Browser erzeugt aus `menu.js` (12 Monate, Tage/Uhrzeiten realistisch verteilt).
+- Zeigt: Bestellungen (Neu → In Zubereitung → Unterwegs/abholbereit → erledigt, Ton, Meldung), Bon-Vorschau und Telegram-Nachricht, Umsatz (heute / 7 / 30 Tage / 12 Monate, Vergleich, Top-Gerichte, Stoßzeiten, Liefergebiete, Zahlungsarten, CSV-Export), Speisekarte (ausverkauft-Schalter, Tagesgericht, Bestellungen pausieren).
+- Testbestellungen auf der Website erscheinen im selben Browser sofort im Demo-Dashboard (`SHOP.demoDashboard = true`, localStorage `kochys-demo-orders`). **Vor dem echten Start auf `false` stellen bzw. entfernen.**
+- Plan, Kosten, Konten: Claude-Dokument „Kochy's – Online-Bestellung mit Dashboard“.
