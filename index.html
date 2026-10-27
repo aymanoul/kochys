@@ -136,8 +136,6 @@ main{padding:28px 0 40px}
 .t.h{background:var(--brown);color:#fff}
 .t.n{background:var(--acc);color:var(--on-acc)}
 .price{flex:none;font-weight:700;font-size:16.5px;white-space:nowrap}
-.item.compact{align-items:center;padding-top:12px;padding-bottom:12px}
-.item.compact .side{flex-direction:row;align-items:center;gap:12px}
 .empty{display:none;text-align:center;color:var(--muted);padding:60px 0}
 
 /* Fotos Tageskarte */
@@ -370,6 +368,8 @@ sup{font-size:.62em;font-weight:500;margin-left:2px;color:var(--muted);line-heig
   .search input{width:100%}
   .search{order:-1}
   .grid{grid-template-columns:1fr}
+  .item.compact{align-items:center;padding-top:12px;padding-bottom:12px}
+  .item.compact .side{flex-direction:row;align-items:center;gap:12px}
   .hero{padding:36px 0 32px}
   .mbar{display:flex}
   .mbar.show{opacity:1;transform:none;pointer-events:auto}
@@ -682,9 +682,15 @@ menu.innerHTML = MENU.map(c => `<section class="section" id="${c.id}">
 /* Aktive Kategorie beim Scrollen */
 const links = [...cats.querySelectorAll('a')];
 const secs = links.map(a => document.getElementById(a.dataset.id));
-let cur = null;
+let cur = null, spyOff = 150;
+function measure(){
+  const h = document.querySelector('header').offsetHeight + document.querySelector('.catbar').offsetHeight;
+  document.documentElement.style.scrollPaddingTop = (h + 14) + 'px';
+  spyOff = h + 24;
+}
+measure(); addEventListener('resize', measure);
 function spy(){
-  const y = window.scrollY + 150; let act = null;
+  const y = window.scrollY + spyOff; let act = null;
   secs.forEach((s,i) => { if (s && s.offsetParent !== null && s.offsetTop <= y) act = i; });
   if (act !== cur) {
     links.forEach(l => l.classList.remove('on'));
