@@ -221,11 +221,29 @@ body.auto .board{grid-template-columns:repeat(2,minmax(0,1fr))}
 .bubble .tm{display:block;text-align:right;font-size:11px;color:#8a8a8a;margin-top:4px}
 
 /* Meldung */
-.toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-140%);background:var(--ink);color:#fff;border-radius:14px;padding:12px 16px;z-index:150;display:flex;gap:12px;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.25);transition:transform .35s cubic-bezier(.2,.8,.2,1);max-width:calc(100% - 24px);font-size:14px}
-.toast.on{transform:translate(-50%,0)}
-.toast .ic{font-size:22px}
-.toast b{display:block}
-.toast button{border:0;background:var(--acc);color:var(--on-acc);border-radius:999px;padding:7px 12px;font-weight:600;font-size:13px;white-space:nowrap}
+/* Mitteilung im Apple-Stil: Handy wie iPhone (von oben), Computer wie Mac (von rechts) */
+.notes{position:fixed;z-index:150;top:calc(8px + env(safe-area-inset-top));left:8px;right:8px;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.nt{--hide:translateY(-140%) scale(.94);pointer-events:auto;position:relative;width:100%;max-width:420px;display:flex;gap:11px;align-items:center;padding:11px 13px;border-radius:20px;
+  background:rgba(250,250,250,.76);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);box-shadow:0 10px 30px rgba(0,0,0,.16),0 0 0 .5px rgba(0,0,0,.08);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Outfit,sans-serif;color:#1d1d1f;cursor:pointer;touch-action:pan-x;user-select:none;-webkit-user-select:none;
+  transform:var(--hide);opacity:0;transition:transform .5s cubic-bezier(.2,1.25,.35,1),opacity .25s ease}
+.nt.on{transform:none;opacity:1}
+.nt.out{transform:var(--hide);opacity:0;transition:transform .38s cubic-bezier(.4,0,.8,.3),opacity .3s ease .08s}
+.nt img{width:38px;height:38px;border-radius:9px;flex:none;background:#fff}
+.nt .tx{flex:1;min-width:0;font-size:13px;line-height:1.3}
+.nt .r1{display:flex;gap:6px;align-items:baseline}
+.nt .r1 b{font-weight:600;font-size:13.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt .r1 small{color:#8a8a8e;font-size:12px;flex:none}
+.nt .r2,.nt .r3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt .r3{color:#3c3c43;opacity:.75}
+.nt .x{position:absolute;left:-7px;top:-7px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(250,250,250,.95);box-shadow:0 1px 4px rgba(0,0,0,.25);color:#555;font-size:14px;line-height:1;display:none;place-items:center;padding:0}
+@media (min-width:761px){
+  .notes{left:auto;right:16px;top:14px;width:356px;align-items:stretch}
+  .nt{--hide:translateX(calc(100% + 28px));border-radius:16px;padding:10px 12px}
+  .nt:hover .x{display:grid}
+}
+.ord.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%,30%{box-shadow:0 0 0 4px rgba(247,163,92,.55),var(--shadow)}}
 
 .foot{color:var(--muted);font-size:12.5px;padding:28px 0 40px;text-align:center}
 .foot a{color:var(--brown)}
@@ -353,7 +371,7 @@ body.auto .board{grid-template-columns:repeat(2,minmax(0,1fr))}
     <div class="mf"><button class="btn btn-dark grow" data-act="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/></svg>Bon drucken</button><button class="btn btn-line" data-act="close">Schließen</button></div>
   </div>
 </div>
-<div class="toast" id="toast"><span class="ic">🔔</span><div><b id="toastT">Neue Bestellung</b><span id="toastS"></span></div><button data-act="toastgo">Ansehen</button></div>
+<div class="notes" id="notes" aria-live="polite"></div>
 <div class="tip" id="tip"></div>
 
 <script src="../menu.js"></script>
@@ -607,12 +625,32 @@ function ding(){
     });
   } catch(e){}
 }
-let toastTimer;
+function notify(o){
+  const box = document.getElementById('notes'), n = document.createElement('div');
+  n.className = 'nt'; n.setAttribute('role', 'status');
+  n.innerHTML = `<button class="x" aria-label="Schließen">×</button><img src="../img/icon-192.png" alt="">
+    <div class="tx"><div class="r1"><b>${o.web ? 'Deine Testbestellung' : 'Neue Bestellung'}</b><small>jetzt</small></div>
+    <div class="r2">${esc(o.name)} · ${o.mode === 'liefer' ? 'Lieferung' : 'Abholung'} · ${eur(o.total)}</div>
+    <div class="r3">${o.auto ? `Angenommen · fertig um ${hm(o.acc + o.prep * 60e3)}` : 'Bitte annehmen'}</div></div>`;
+  box.prepend(n);
+  [...box.children].slice(3).forEach(x => x.remove());
+  requestAnimationFrame(() => requestAnimationFrame(() => n.classList.add('on')));
+  let timer, y0 = null;
+  const close = () => { clearTimeout(timer); n.classList.add('out'); n.classList.remove('on'); setTimeout(() => n.remove(), 450); };
+  const arm = () => { clearTimeout(timer); timer = setTimeout(close, 5000); };
+  arm();
+  n.addEventListener('mouseenter', () => clearTimeout(timer));
+  n.addEventListener('mouseleave', arm);
+  n.addEventListener('pointerdown', e => { y0 = e.clientY; });
+  n.addEventListener('pointerup', e => {
+    const dy = y0 == null ? 0 : e.clientY - y0; y0 = null;
+    if (e.target.closest('.x') || dy < -12) return close();
+    close(); show('orders');
+    setTimeout(() => { const c = document.querySelector(`.ord[data-no="${o.no}"]`); if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); } }, 60);
+  });
+}
 function arrived(o){
-  o.fresh = true; ding();
-  document.getElementById('toastT').textContent = (o.web ? 'Deine Testbestellung ist da' : 'Neue Bestellung') + (o.auto ? ' – automatisch angenommen' : '');
-  document.getElementById('toastS').textContent = `${o.name} · ${o.mode === 'liefer' ? 'Lieferung' : 'Abholung'} · ${eur(o.total)}${o.auto ? ` · fertig um ${hm(o.acc + o.prep * 60e3)} · Bon wird gedruckt` : ''}`;
-  const t = document.getElementById('toast'); t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 6000);
+  o.fresh = true; ding(); notify(o);
   renderOrders(); if (view === 'sales') renderSales();
 }
 /* Etwa jede Minute eine Beispiel-Bestellung (max. 8 pro Besuch) */
@@ -783,7 +821,6 @@ document.addEventListener('click', e => {
     case 'hidenote': document.getElementById('note').hidden = true; store.set('kochys-demo-note', 1); break;
     case 'rush': setRush(!RUSH); break;
     case 'settings': show('menu'); break;
-    case 'toastgo': document.getElementById('toast').classList.remove('on'); show('orders'); break;
   }
 });
 let rsz; addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(() => { if (view === 'sales') renderSales(); }, 150); });
