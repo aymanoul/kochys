@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Benachrichtigung – 3 Varianten</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../img/favicon-32.png" sizes="32x32">
+<style>
+@font-face{font-family:Fredoka;src:url(../fonts/fredoka.woff2) format("woff2");font-weight:300 700;font-display:swap}
+:root{--bg:#f5f3f0;--ink:#1d1d1f;--muted:#6e6e73;--brown:#643d11;--acc:#f7a35c;--green:#34c759;
+  --sys:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Outfit,system-ui,sans-serif;
+  --spring:cubic-bezier(.2,1.25,.35,1); --ease-in:cubic-bezier(.4,0,.8,.3)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sys);-webkit-font-smoothing:antialiased;line-height:1.4}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 16px 56px}
+h1{font-family:Fredoka,var(--sys);font-weight:600;color:var(--brown);font-size:clamp(26px,4vw,34px);line-height:1.15}
+.lead{color:var(--muted);margin-top:8px;font-size:16px;max-width:640px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:28px}
+.var{display:flex;flex-direction:column;align-items:center;text-align:center}
+.var h2{font-size:19px;font-weight:700;margin-top:16px}
+.var h2 span{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--brown);color:#fff;font-size:15px;margin-right:8px;vertical-align:2px}
+.var p{color:var(--muted);font-size:14.5px;margin-top:6px;max-width:300px}
+.play{margin-top:12px;border:0;background:#fff;color:var(--ink);font:600 14px var(--sys);padding:10px 18px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:pointer}
+.play:active{transform:scale(.96)}
+
+/* iPhone-Rahmen */
+.phone{position:relative;width:min(300px,86vw);aspect-ratio:300/640;border-radius:48px;background:#111;padding:10px;box-shadow:0 20px 50px rgba(0,0,0,.18),inset 0 0 0 2px #333}
+.screen{position:relative;width:100%;height:100%;border-radius:39px;overflow:hidden;background:#fff url(vorschau-bg.jpg) center 44px/100% auto no-repeat}
+.status{position:absolute;left:0;right:0;top:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px 0 30px;font:600 14px var(--sys);color:#000;z-index:1}
+.status i{font-style:normal;letter-spacing:1px;font-size:12px}
+
+/* 1 – Mitteilung wie auf dem iPhone */
+.n1{position:absolute;left:8px;right:8px;top:46px;z-index:5;display:flex;gap:10px;align-items:center;padding:11px 12px;border-radius:20px;
+  background:rgba(250,250,250,.72);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);
+  box-shadow:0 10px 30px rgba(0,0,0,.16),0 0 0 .5px rgba(0,0,0,.06);text-align:left;
+  transform:translateY(-140%) scale(.94);opacity:0;transition:transform .5s var(--spring),opacity .25s ease}
+.n1.on{transform:none;opacity:1}
+.n1.out{transform:translateY(-140%) scale(.96);opacity:0;transition:transform .38s var(--ease-in),opacity .3s ease .08s}
+.n1 img{width:36px;height:36px;border-radius:9px;flex:none;background:#fff}
+.n1 .tx{flex:1;min-width:0;font-size:13px;line-height:1.3}
+.n1 .r1{display:flex;gap:6px;align-items:baseline}
+.n1 .r1 b{font-weight:600;font-size:13.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.n1 .r1 small{color:#8a8a8e;font-size:12px;flex:none}
+.n1 .r2,.n1 .r3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.n1 .r3{color:#3c3c43;opacity:.75}
+
+/* 2 – Dynamic Island */
+.n2{position:absolute;left:50%;top:9px;z-index:5;width:96px;height:28px;border-radius:20px;background:#000;transform:translateX(-50%);
+  transition:width .55s var(--spring),height .55s var(--spring),border-radius .55s var(--spring),top .55s var(--spring);overflow:hidden;color:#fff;text-align:left}
+.n2.big{width:calc(100% - 12px);height:72px;border-radius:36px;top:7px}
+.n2.mini{width:118px}
+.n2 .full,.n2 .compact{position:absolute;inset:0;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .2s ease}
+.n2 .full{padding:0 16px 0 12px;gap:9px}
+.n2.big .full{opacity:1;transition:opacity .25s ease .18s}
+.n2.mini .compact{opacity:1;transition:opacity .2s ease .2s}
+.n2 .compact{padding:0 11px 0 5px;gap:6px}
+.n2 img{width:40px;height:40px;border-radius:50%;flex:none;background:#fff}
+.n2 .compact img{width:20px;height:20px}
+.n2 .tx{flex:1;min-width:0;font-size:13px;line-height:1.3}
+.n2 .tx b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.n2 .tx span{color:#a1a1a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.n2 .amt{text-align:right;flex:none}
+.n2 .amt b{display:block;font-size:16px;font-weight:700;color:var(--acc)}
+.n2 .amt small{color:#a1a1a6;font-size:12px}
+.n2 .compact b{font-size:13px;color:var(--acc);font-weight:700}
+.n2 .compact .dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-left:auto;margin-right:6px}
+
+/* 3 – Karte von unten (wie Apple Pay) */
+.n3{position:absolute;left:8px;right:8px;bottom:8px;z-index:5;border-radius:32px;padding:22px 18px 18px;background:rgba(255,255,255,.86);
+  -webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);box-shadow:0 -6px 40px rgba(0,0,0,.18);
+  transform:translateY(115%);transition:transform .6s var(--spring)}
+.n3.on{transform:none}
+.n3.out{transform:translateY(115%);transition:transform .4s var(--ease-in)}
+.n3 .chk{width:58px;height:58px;margin:0 auto}
+.n3 .chk circle{fill:none;stroke:var(--green);stroke-width:3.5;stroke-dasharray:170;stroke-dashoffset:170}
+.n3 .chk path{fill:none;stroke:var(--green);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40}
+.n3.on .chk circle{transition:stroke-dashoffset .55s ease .25s;stroke-dashoffset:0}
+.n3.on .chk path{transition:stroke-dashoffset .35s ease .7s;stroke-dashoffset:0}
+.n3 h3{font-size:17px;font-weight:600;margin-top:10px}
+.n3 .s{color:#6e6e73;font-size:13.5px;margin-top:2px}
+.n3 .rows{margin-top:14px;background:rgba(118,118,128,.1);border-radius:14px;padding:4px 14px;text-align:left;font-size:13.5px}
+.n3 .rows div{display:flex;justify-content:space-between;gap:10px;padding:8px 0}
+.n3 .rows div + div{border-top:.5px solid rgba(60,60,67,.2)}
+.n3 .rows span{color:#6e6e73}
+.n3 .rows b{font-weight:600}
+.n3 .btn{display:block;width:100%;margin-top:12px;border:0;border-radius:14px;padding:12px;background:var(--brown);color:#fff;font:600 15px var(--sys)}
+.n3 .handle{width:36px;height:5px;border-radius:3px;background:rgba(60,60,67,.3);margin:-12px auto 10px}
+
+.foot{margin-top:40px;text-align:center;color:var(--muted);font-size:14px}
+.foot a{color:var(--brown);font-weight:600}
+@media (max-width:900px){.grid{grid-template-columns:1fr;gap:44px}}
+@media (prefers-reduced-motion:reduce){.n1,.n2,.n3{transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Neue Bestellung – 3 Varianten</h1>
+  <p class="lead">So könnte die Meldung im Dashboard aussehen, wenn eine Bestellung reinkommt. Alle drei laufen in Schleife; mit „Nochmal abspielen“ startet eine neu.</p>
+
+  <div class="grid">
+    <section class="var">
+      <div class="phone"><div class="screen">
+        <div class="status"><span>21:30</span><i>ᯤ ▮</i></div>
+        <div class="n1" id="n1">
+          <img src="../img/icon-192.png" alt="">
+          <div class="tx">
+            <div class="r1"><b>Neue Bestellung</b><small>jetzt</small></div>
+            <div class="r2">Emre Y. · Lieferung · 24,40 €</div>
+            <div class="r3">Angenommen · fertig um 22:15</div>
+          </div>
+        </div>
+      </div></div>
+      <h2><span>1</span>Mitteilung</h2>
+      <p>Wie eine iPhone-Mitteilung: gleitet weich von oben herein, Milchglas-Hintergrund, verschwindet nach 5 Sekunden oder mit einem Wisch nach oben.</p>
+      <button class="play" data-play="1">Nochmal abspielen</button>
+    </section>
+
+    <section class="var">
+      <div class="phone"><div class="screen">
+        <div class="status" style="padding:0 30px"><span>21:30</span><i>ᯤ ▮</i></div>
+        <div class="n2" id="n2">
+          <div class="full">
+            <img src="../img/icon-192.png" alt="">
+            <div class="tx"><b>Neue Bestellung</b><span>Emre Y. · bis 22:15</span></div>
+            <div class="amt"><b>24,40 €</b><small>Lieferung</small></div>
+          </div>
+          <div class="compact"><img src="../img/icon-192.png" alt=""><span class="dot"></span><b>24,40 €</b></div>
+        </div>
+      </div></div>
+      <h2><span>2</span>Dynamic Island</h2>
+      <p>Wie die Dynamic Island: Die schwarze Kapsel oben wächst auf, zeigt die Bestellung und schrumpft wieder zu einer kleinen Anzeige mit dem Betrag.</p>
+      <button class="play" data-play="2">Nochmal abspielen</button>
+    </section>
+
+    <section class="var">
+      <div class="phone"><div class="screen">
+        <div class="status"><span>21:30</span><i>ᯤ ▮</i></div>
+        <div class="n3" id="n3">
+          <div class="handle"></div>
+          <svg class="chk" viewBox="0 0 58 58" aria-hidden="true"><circle cx="29" cy="29" r="26"/><path d="M18 30l8 8 15-17"/></svg>
+          <h3>Bestellung angenommen</h3>
+          <p class="s">Bon wird gedruckt</p>
+          <div class="rows">
+            <div><span>Kunde</span><b>Emre Y.</b></div>
+            <div><span>Lieferung</span><b>fertig um 22:15</b></div>
+            <div><span>Betrag</span><b>24,40 €</b></div>
+          </div>
+          <button class="btn">Ansehen</button>
+        </div>
+      </div></div>
+      <h2><span>3</span>Karte von unten</h2>
+      <p>Wie bei Apple Pay: Eine Karte federt von unten hoch, ein grüner Haken zeichnet sich, darunter die wichtigsten Angaben.</p>
+      <button class="play" data-play="3">Nochmal abspielen</button>
+    </section>
+  </div>
+
+  <p class="foot">Welche gefällt dir? Schreib einfach 1, 2 oder 3 – dann baue ich sie ins <a href="./">Dashboard</a> ein.</p>
+</div>
+
+<script>
+const T = {};
+const later = (k, f, ms) => { T[k] = T[k] || []; T[k].push(setTimeout(f, ms)); };
+const clear = k => { (T[k] || []).forEach(clearTimeout); T[k] = []; };
+const el = id => document.getElementById(id);
+const reflow = e => void e.offsetWidth;
+
+const PLAY = {
+  1(){ const n = el('n1'); clear(1); n.classList.remove('on', 'out'); reflow(n);
+    later(1, () => n.classList.add('on'), 60);
+    later(1, () => { n.classList.add('out'); n.classList.remove('on'); }, 5000); },
+  2(){ const n = el('n2'); clear(2); n.classList.remove('big', 'mini'); reflow(n);
+    later(2, () => n.classList.add('big'), 120);
+    later(2, () => { n.classList.remove('big'); n.classList.add('mini'); }, 4200);
+    later(2, () => n.classList.remove('mini'), 6800); },
+  3(){ const n = el('n3'); clear(3); n.classList.remove('on', 'out'); reflow(n);
+    later(3, () => n.classList.add('on'), 60);
+    later(3, () => { n.classList.add('out'); n.classList.remove('on'); }, 5200); }
+};
+/* Wisch nach oben schließt Variante 1 */
+let y0 = null;
+el('n1').addEventListener('pointerdown', e => { y0 = e.clientY; });
+addEventListener('pointerup', e => { if (y0 != null && e.clientY - y0 < -15) { clear(1); el('n1').classList.add('out'); el('n1').classList.remove('on'); } y0 = null; });
+
+document.querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => PLAY[b.dataset.play]()));
+/* Schleife, leicht versetzt */
+[1, 2, 3].forEach((k, i) => { setTimeout(() => { PLAY[k](); setInterval(() => PLAY[k](), 8000); }, 600 + i * 900); });
+</script>
+</body>
+</html>
