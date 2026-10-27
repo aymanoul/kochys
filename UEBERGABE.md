@@ -92,4 +92,5 @@ Format und Auswahl-Gruppen sind oben in `menu.js` erklärt: `sizes` = Varianten 
 - Live: https://aymanoul.github.io/kochys/dashboard-demo/ – nur Beispieldaten, im Browser erzeugt aus `menu.js` (12 Monate, Tage/Uhrzeiten realistisch verteilt).
 - Zeigt: Bestellungen (Neu → In Zubereitung → Unterwegs/abholbereit → erledigt, Ton, Meldung), Bon-Vorschau und Telegram-Nachricht, Umsatz (heute / 7 / 30 Tage / 12 Monate, Vergleich, Top-Gerichte, Stoßzeiten, Liefergebiete, Zahlungsarten, CSV-Export), Speisekarte (ausverkauft-Schalter, Tagesgericht, Bestellungen pausieren).
 - Testbestellungen auf der Website erscheinen im selben Browser sofort im Demo-Dashboard (`SHOP.demoDashboard = true`, localStorage `kochys-demo-orders`). **Vor dem echten Start auf `false` stellen bzw. entfernen.**
+- **Automatik (Standard: an):** Bestellungen werden sofort mit Standardzeit angenommen (Lieferung 45 Min., Abholung 20 Min., „Viel los“ +15 Min.), Bon wird gedruckt, Status schaltet von selbst weiter. Ausschaltbar unter Einstellungen → dann Annehmen per Klick wie bei Lieferando.
 - Plan, Kosten, Konten: Claude-Dokument „Kochy's – Online-Bestellung mit Dashboard“.

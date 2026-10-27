@@ -90,6 +90,18 @@ body.pause .paused{display:block}
 .tg.paid{background:var(--green-soft);color:#0b6e2e}
 .tg.cash{background:#fff4e5;color:#8a4b00}
 .tg.web{background:var(--brown);color:#fff}
+.tg.auto{background:var(--green-soft);color:#0b6e2e}
+.autobar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin-top:16px;background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px;border-left:5px solid var(--green)}
+body:not(.auto) .autobar{border-left-color:var(--acc)}
+.ab-ic{font-size:22px}
+.ab-t{flex:1;min-width:220px;font-size:14px;color:#4a4038}
+.ab-t b{display:block;color:var(--ink);font-size:15px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font-weight:600;font-size:13.5px;white-space:nowrap}
+.chip.on{background:var(--red-soft);border-color:#f3b7b0;color:#8f1f14}
+body.auto .col.new{display:none}
+body.auto .board{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sel{border:1.5px solid var(--line);border-radius:10px;padding:7px 9px;font:600 14px Outfit,sans-serif;background:#fff;color:var(--ink)}
+.auto-hint{font-size:12px;color:var(--muted);margin-top:6px}
 .tg.late{background:var(--red-soft);color:#8f1f14}
 .cust{margin-top:10px;font-size:14px}
 .cust b{font-weight:600}
@@ -220,7 +232,7 @@ body.pause .paused{display:block}
 [hidden]{display:none!important}
 
 @media (max-width:980px){
-  .board{grid-template-columns:1fr}
+  .board,body.auto .board{grid-template-columns:1fr}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid2{grid-template-columns:1fr}
 }
@@ -253,7 +265,7 @@ body.pause .paused{display:block}
   <div class="wrap tabs" role="tablist">
     <button class="tab on" data-tab="orders">Bestellungen <span class="cnt" id="openCnt"></span></button>
     <button class="tab" data-tab="sales">Umsatz</button>
-    <button class="tab" data-tab="menu">Speisekarte</button>
+    <button class="tab" data-tab="menu">Einstellungen</button>
   </div>
 </div>
 
@@ -268,6 +280,7 @@ body.pause .paused{display:block}
 
   <!-- Bestellungen -->
   <section id="v-orders">
+    <div class="autobar"><span class="ab-ic" id="abIc">⚡</span><div class="ab-t"><b id="abTitle"></b><span id="abText"></span></div><button class="chip" id="rushChip" data-act="rush"></button><button class="chip" data-act="settings">Ändern</button></div>
     <div class="kpis" id="todayKpis"></div>
     <div class="board">
       <div class="col new"><div class="colh">Neu <span class="n" id="n-neu">0</span><span class="hint">annehmen</span></div><div id="c-neu"></div></div>
@@ -316,10 +329,13 @@ body.pause .paused{display:block}
         <p class="saved" id="saved"></p>
       </div>
       <div class="panel">
-        <h3>Bestellannahme</h3><p class="sub">Zum Beispiel bei Hochbetrieb oder wenn der Fahrer fehlt.</p>
-        <div class="mitem" style="border:0"><div class="nm"><b>Online-Bestellungen annehmen</b><br><small>Aus = Kunden sehen „bitte anrufen“</small></div><label class="sw"><input type="checkbox" id="acceptSw" checked><span></span></label></div>
+        <h3>Bestellannahme</h3><p class="sub">Einmal einstellen – gilt dann für alle Bestellungen.</p>
+        <div class="mitem" style="border:0"><div class="nm"><b>Automatisch annehmen</b><br><small>Kein Klick nötig: Bestellung wird sofort angenommen, der Bon gedruckt, der Kunde sieht die Zeit</small></div><label class="sw"><input type="checkbox" id="autoSw"><span></span></label></div>
+        <div class="mitem"><div class="nm"><b>Zeit für Lieferung</b><br><small>bis der Kunde sein Essen hat</small></div><select class="sel" id="tlSel"><option value="30">30 Min.</option><option value="45">45 Min.</option><option value="60">60 Min.</option><option value="75">75 Min.</option></select></div>
+        <div class="mitem"><div class="nm"><b>Zeit für Abholung</b><br><small>bis das Essen bereitliegt</small></div><select class="sel" id="taSel"><option value="10">10 Min.</option><option value="15">15 Min.</option><option value="20">20 Min.</option><option value="30">30 Min.</option></select></div>
+        <div class="mitem"><div class="nm"><b>Viel los</b><br><small>+15 Min. auf alle neuen Bestellungen, mit einem Tipp</small></div><label class="sw"><input type="checkbox" id="rushSw"><span></span></label></div>
+        <div class="mitem"><div class="nm"><b>Online-Bestellungen annehmen</b><br><small>Aus = Kunden sehen „bitte anrufen“</small></div><label class="sw"><input type="checkbox" id="acceptSw" checked><span></span></label></div>
         <div class="mitem"><div class="nm"><b>Lieferung anbieten</b><br><small>Aus = nur Abholung möglich</small></div><label class="sw"><input type="checkbox" checked><span></span></label></div>
-        <div class="mitem"><div class="nm"><b>Lieferzeit auf der Website</b><br><small>Wird Kunden angezeigt</small></div><select id="eta" style="border:1.5px solid var(--line);border-radius:10px;padding:7px 9px;font:600 14px Outfit,sans-serif;background:#fff"><option>30–45 Min.</option><option selected>45–60 Min.</option><option>60–75 Min.</option></select></div>
       </div>
     </div>
     <p class="sub" style="margin-top:18px">Ausverkauft? Einfach ausschalten – das Gericht ist auf der Website sofort nicht mehr bestellbar.</p>
@@ -438,10 +454,23 @@ for (let i = 365; i >= 0; i--) {
   }
 }
 ORDERS.sort((a, b) => a.t - b.t);
+/* Automatik: Bestellungen werden sofort mit Standardzeit angenommen und schalten von selbst weiter */
+let AUTO = store.get('kochys-demo-auto', true), TL = store.get('kochys-demo-tl', 45), TA = store.get('kochys-demo-ta', 20), RUSH = store.get('kochys-demo-rush', false);
+const prepFor = o => (o.mode === 'liefer' ? TL : TA) + (RUSH ? 15 : 0);
+function autoAccept(o){ if (!AUTO || o.status !== 'neu') return; o.status = 'zub'; o.prep = prepFor(o); o.acc = o.t; o.auto = true; }
+function autoTick(){
+  if (!AUTO) return; const now = Date.now();
+  todays().forEach(o => {
+    if (o.status === 'neu') autoAccept(o);
+    const ready = (o.acc || o.t) + (o.prep || 30) * 60e3;
+    if (o.status === 'zub' && now >= ready) o.status = 'fertig';
+    if (o.status === 'fertig' && now >= ready + (o.mode === 'liefer' ? 20 : 15) * 60e3) o.status = 'erledigt';
+  });
+}
 /* Status heutiger Bestellungen nach Alter */
 ORDERS.filter(o => o.t >= today0.getTime()).forEach(o => {
   const age = (NOW - o.t) / 60e3;
-  if (age < 4) o.status = 'neu';
+  if (age < 4) { o.status = 'neu'; autoAccept(o); }
   else if (age < 26) { o.status = 'zub'; o.prep = 30; o.acc = o.t + 2 * 60e3; }
   else if (age < 48) { o.status = 'fertig'; o.prep = 30; o.acc = o.t + 2 * 60e3; }
 });
@@ -468,7 +497,7 @@ function webOrders(){
 }
 function mergeWeb(announce){
   let added = null;
-  webOrders().forEach(w => { if (!ORDERS.some(o => o.no === w.no && o.web)) { ORDERS.push(w); added = w; } });
+  webOrders().forEach(w => { if (!ORDERS.some(o => o.no === w.no && o.web)) { autoAccept(w); ORDERS.push(w); added = w; } });
   ORDERS.sort((a, b) => a.t - b.t);
   if (added && announce) arrived(added);
 }
@@ -494,8 +523,8 @@ function card(o){
   let acts = '';
   if (o.status === 'neu') acts = `<div class="prep">Fertig in <button data-act="prep" data-no="${o.no}" data-m="20" class="${(o.pick || 30) === 20 ? 'on' : ''}">20 Min.</button><button data-act="prep" data-no="${o.no}" data-m="30" class="${(o.pick || 30) === 30 ? 'on' : ''}">30 Min.</button><button data-act="prep" data-no="${o.no}" data-m="45" class="${(o.pick || 30) === 45 ? 'on' : ''}">45 Min.</button></div>
     <div class="acts"><button class="btn btn-acc grow" data-act="accept" data-no="${o.no}">Annehmen</button><button class="btn btn-line" data-act="bon" data-no="${o.no}" aria-label="Bon ansehen">${ICON.receipt}</button><button class="btn btn-ghost" data-act="reject" data-no="${o.no}">Ablehnen</button></div>`;
-  else if (o.status === 'zub') acts = `<div class="acts"><button class="btn btn-dark grow" data-act="ready" data-no="${o.no}">${liefer ? 'Fertig – Fahrer los' : 'Fertig – abholbereit'}</button><button class="btn btn-line" data-act="bon" data-no="${o.no}" aria-label="Bon ansehen">${ICON.receipt}</button></div>`;
-  else if (o.status === 'fertig') acts = `<div class="acts"><button class="btn btn-line grow" data-act="finish" data-no="${o.no}">${liefer ? 'Zugestellt' : 'Abgeholt'} – erledigt</button><button class="btn btn-line" data-act="bon" data-no="${o.no}" aria-label="Bon ansehen">${ICON.receipt}</button></div>`;
+  else if (o.status === 'zub') acts = `${AUTO ? '<p class="auto-hint">Schaltet von selbst weiter – Tippen nur, wenn es früher fertig ist.</p>' : ''}<div class="acts"><button class="btn ${AUTO ? 'btn-line' : 'btn-dark'} grow" data-act="ready" data-no="${o.no}">${liefer ? 'Fertig – Fahrer los' : 'Fertig – abholbereit'}</button><button class="btn btn-line" data-act="bon" data-no="${o.no}" aria-label="Bon ansehen">${ICON.receipt}</button></div>`;
+  else if (o.status === 'fertig') acts = `${AUTO ? '<p class="auto-hint">Wird automatisch als erledigt markiert.</p>' : ''}<div class="acts"><button class="btn btn-line grow" data-act="finish" data-no="${o.no}">${liefer ? 'Zugestellt' : 'Abgeholt'} – erledigt</button><button class="btn btn-line" data-act="bon" data-no="${o.no}" aria-label="Bon ansehen">${ICON.receipt}</button></div>`;
   return `<article class="ord${o.status === 'neu' ? ' isnew' : ''}${o.fresh ? ' arrive' : ''}" data-no="${o.no}">
     <div class="oh"><span class="otime">${hm(o.t)}</span><span class="oago" data-ago="${o.t}">${ago(o.t)}</span><span class="ono">${o.no}</span></div>
     <div class="tags">
@@ -503,6 +532,7 @@ function card(o){
       <span class="tg ${paid ? 'paid' : 'cash'}">${paid ? 'Bezahlt · ' + esc(o.pay) : 'Bar kassieren'}</span>
       ${o.wish === 'time' ? `<span class="tg">Wunschzeit ${esc(o.wishTime || hm(o.t + 75 * 60e3))}</span>` : ''}
       ${o.web ? '<span class="tg web">Deine Testbestellung</span>' : ''}
+      ${o.auto && o.status === 'zub' ? '<span class="tg auto">Automatisch angenommen · Bon gedruckt</span>' : ''}
       ${late ? '<span class="tg late">Verspätet</span>' : ''}
     </div>
     <div class="cust"><b>${esc(o.name)}</b> · <a href="tel:${esc(o.phone.replace(/\s/g, ''))}">${esc(o.phone)}</a>
@@ -514,6 +544,7 @@ function card(o){
   </article>`;
 }
 function renderOrders(){
+  autoTick(); renderAutobar();
   const T = todays().filter(o => o.status !== 'abgelehnt');
   const by = s => T.filter(o => o.status === s).sort((a, b) => s === 'neu' ? a.t - b.t : a.t - b.t);
   [['neu', 'Keine neuen Bestellungen'], ['zub', 'Gerade nichts in der Küche'], ['fertig', 'Nichts unterwegs']].forEach(([s, e]) => {
@@ -543,6 +574,23 @@ function renderTodayKpis(){
   ].map(([l, v, d]) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div>${d}</div>`).join('');
 }
 setInterval(() => { document.querySelectorAll('[data-ago]').forEach(e => e.textContent = ago(+e.dataset.ago)); }, 30e3);
+setInterval(() => { if (view === 'orders' && !document.getElementById('ov').classList.contains('on')) renderOrders(); }, 20e3);
+function renderAutobar(){
+  document.body.classList.toggle('auto', AUTO);
+  const r = RUSH ? 15 : 0;
+  document.getElementById('abIc').textContent = AUTO ? '⚡' : '✋';
+  document.getElementById('abTitle').textContent = AUTO ? 'Automatik an – kein Klick nötig' : 'Automatik aus – jede Bestellung selbst annehmen';
+  document.getElementById('abText').textContent = AUTO ? `Neue Bestellungen werden sofort angenommen und der Bon gedruckt. Kunden sehen: Lieferung ca. ${TL + r} Min., Abholung ca. ${TA + r} Min.` : 'Neue Bestellungen warten unter „Neu“, bis jemand sie annimmt und eine Zeit wählt.';
+  const c = document.getElementById('rushChip'); c.textContent = RUSH ? 'Viel los: +15 Min. ist an' : 'Viel los? +15 Min.'; c.classList.toggle('on', RUSH);
+  document.getElementById('autoSw').checked = AUTO; document.getElementById('rushSw').checked = RUSH;
+  document.getElementById('tlSel').value = String(TL); document.getElementById('taSel').value = String(TA);
+}
+function setAuto(v){ AUTO = v; store.set('kochys-demo-auto', v); renderOrders(); }
+function setRush(v){ RUSH = v; store.set('kochys-demo-rush', v); renderAutobar(); }
+document.getElementById('autoSw').addEventListener('change', e => setAuto(e.target.checked));
+document.getElementById('rushSw').addEventListener('change', e => setRush(e.target.checked));
+document.getElementById('tlSel').addEventListener('change', e => { TL = +e.target.value; store.set('kochys-demo-tl', TL); renderAutobar(); });
+document.getElementById('taSel').addEventListener('change', e => { TA = +e.target.value; store.set('kochys-demo-ta', TA); renderAutobar(); });
 
 /* ---------- Ton und Meldung ---------- */
 let sound = store.get('kochys-demo-sound', false), actx = null;
@@ -562,8 +610,8 @@ function ding(){
 let toastTimer;
 function arrived(o){
   o.fresh = true; ding();
-  document.getElementById('toastT').textContent = o.web ? 'Deine Testbestellung ist da!' : 'Neue Bestellung';
-  document.getElementById('toastS').textContent = `${o.name} · ${o.mode === 'liefer' ? 'Lieferung' : 'Abholung'} · ${eur(o.total)}`;
+  document.getElementById('toastT').textContent = (o.web ? 'Deine Testbestellung ist da' : 'Neue Bestellung') + (o.auto ? ' – automatisch angenommen' : '');
+  document.getElementById('toastS').textContent = `${o.name} · ${o.mode === 'liefer' ? 'Lieferung' : 'Abholung'} · ${eur(o.total)}${o.auto ? ` · fertig um ${hm(o.acc + o.prep * 60e3)} · Bon wird gedruckt` : ''}`;
   const t = document.getElementById('toast'); t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 6000);
   renderOrders(); if (view === 'sales') renderSales();
 }
@@ -571,7 +619,7 @@ function arrived(o){
 let simCount = 0, paused = false;
 function simulate(){
   if (paused || simCount >= 8) return;
-  const o = makeOrder(rng(Date.now() % 1e9), Date.now()); o.status = 'neu';
+  const o = makeOrder(rng(Date.now() % 1e9), Date.now()); o.status = 'neu'; autoAccept(o);
   while (ORDERS.some(x => x.no === o.no)) o.no += 'b';
   ORDERS.push(o); simCount++; arrived(o);
 }
@@ -733,6 +781,8 @@ document.addEventListener('click', e => {
     case 'print': window.print(); break;
     case 'csv': csv(); break;
     case 'hidenote': document.getElementById('note').hidden = true; store.set('kochys-demo-note', 1); break;
+    case 'rush': setRush(!RUSH); break;
+    case 'settings': show('menu'); break;
     case 'toastgo': document.getElementById('toast').classList.remove('on'); show('orders'); break;
   }
 });
