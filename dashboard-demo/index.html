@@ -448,7 +448,7 @@ function makeOrder(r, t){
     no: `KO-${pad(d.getDate())}${pad(d.getMonth() + 1)}-${pad(d.getHours())}${pad(d.getMinutes())}`,
     t, mode: liefer ? 'liefer' : 'abhol', area,
     name: `${pickA(r, FIRST)} ${LAST[Math.floor(r() * LAST.length)]}.`,
-    phone: `01${pickA(r, ['51','52','57','60','62','70','71','76','77'])} ${Math.floor(1000 + r() * 9000)} ${Math.floor(100 + r() * 900)}`,
+    phone: `01${pickA(r, ['51','52','57','60','62','70','71','76','77'])} ••• ${Math.floor(10 + r() * 90)}`,   // erfundene Nummern bewusst unvollständig
     street: liefer ? `${pickA(r, STREETS)} ${1 + Math.floor(r() * 60)}` : '', zip: liefer ? AREAS[area].zip : '', city: liefer ? AREAS[area].city : '',
     pay: PAYS[+pickW(r, {0: PAY_W[0], 1: PAY_W[1], 2: PAY_W[2]})],
     note: r() < .14 ? pickA(r, NOTES) : '', wish: r() < .08 ? 'time' : 'asap',

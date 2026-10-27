@@ -95,3 +95,11 @@ Format und Auswahl-Gruppen sind oben in `menu.js` erklärt: `sizes` = Varianten 
 - **Automatik (Standard: an):** Bestellungen werden sofort mit Standardzeit angenommen (Lieferung 45 Min., Abholung 20 Min., „Viel los“ +15 Min.), Bon wird gedruckt, Status schaltet von selbst weiter. Ausschaltbar unter Einstellungen → dann Annehmen per Klick wie bei Lieferando.
 - **Benachrichtigung (Wahl Ayman):** Handy = iPhone-Mitteilung von oben (Milchglas, Feder-Animation, Wisch nach oben schließt); Computer = Mac-Mitteilung oben rechts, stapelt bis zu 3, bleibt beim Darüberfahren stehen, × zum Schließen. Antippen springt zur Bestellung. Varianten-Vergleich: `dashboard-demo/benachrichtigung.html`.
 - Plan, Kosten, Konten: Claude-Dokument „Kochy's – Online-Bestellung mit Dashboard“.
+
+
+## 8. Vorschau-Schutz (28.10.2026)
+
+- Startseite hat `noindex, nofollow` (Vorschau soll nicht bei Google erscheinen) – **beim Umzug auf kochys-ratingen.de entfernen**.
+- `SHOP.demoDashboard = false`: Website schickt keine Testbestellungen mehr an die Demo und zeigt keinen Demo-Link.
+- Demo-Telefonnummern sind gekürzt (keine zufälligen echten Nummern).
+- Chef arbeitet mit **WinOrder** (Kasse/TSE, Lieferando-Anbindung) → eigenes Dashboard nicht gewünscht; Ziel: Website-Bestellungen direkt in WinOrder (Schnittstelle beim WinOrder-Support erfragen).
